@@ -23,7 +23,18 @@ async function getStatus(e){
 
     if (response.ok){
         console.log(data.expiry);
-    }
-        
+        displayStatus(data);
+    } else {
+        //data.error is the descriptive error being returned from the json data
+        //'throw' is built-in javascript statement allowing the creation of a custom error
+        throw new Error(data.error);
+    }        
+}
+
+function displayStatus(data){
+
+    document.getElementById("resultsModalTitle").innerText = "API Key Status";
+    document.getElementById("results-content").innerHTML = `Your key is valid until <br> ${data.expiry_date}`
+    resultsModal.show();
 
 }
