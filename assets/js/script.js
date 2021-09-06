@@ -39,12 +39,36 @@ function displayStatus(data){
     resultsModal.show();
 
 }
+function processOptions(form){
+
+    let optionList = [];
+
+    for(let entry in form.entries){
+        if (entry[0] === "options"){
+            optionList.push(entry[1])
+        }
+    }
+    //delete existing 'options' because there should only be one
+    //options line in the object
+    form.delete("options");
+
+    //append a new 'options' and give it a string made up of all
+    //entries in the optionList array separated by a comma
+    //(not specifiying any delimiter on the join method will default to commas)
+    form.append("options", optionList.join());
+    
+    return form;
+}
 
 async function postForm(e){
 
     //method to create an object from the form data/fields
     //this object is used in the 'body' parameter of the fetch
     const form = new FormData(document.getElementById("checksform"));
+
+    //needs to have additional processing to format options into comma separated list
+    //so will create and use a function do to this:
+    const form = processOptions(new FormData(document.getElementById("checksform")));
 
     //this is will make a POST request to the API, with authorisation, attaching the form object:
     const response = fetch(API_URL, {
