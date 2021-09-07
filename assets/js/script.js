@@ -27,6 +27,8 @@ async function getStatus(e){
     } else {
         //data.error is the descriptive error being returned from the json data
         //'throw' is built-in javascript statement allowing the creation of a custom error
+        // all javascript execution stops after a 'throw'
+        displayException(data);
         throw new Error(data.error);
     }        
 }
@@ -35,6 +37,20 @@ function displayStatus(data){
 
     document.getElementById("resultsModalTitle").innerText = "API Key Status";
     document.getElementById("results-content").innerHTML = `Your key is valid until <br> ${data.expiry}`
+    resultsModal.show();
+
+}
+
+function displayException(data){
+
+    let header = "An Exception Occurred";
+    document.getElementById("resultsModalTitle").innerText = header;
+    
+    let exceptionMessage = `The API returned status code ${data.status_code} <br>`;
+    exceptionMessage += `Error number: <strong>${data.error_no}</strong><br>`;
+    exceptionMessage += `Error text: <strong>${data.error}</strong><br>`;
+
+    document.getElementById("results-content").innerHTML = exceptionMessage;
     resultsModal.show();
 
 }
@@ -84,6 +100,8 @@ async function postForm(e){
     if(response.ok){
         displayErrors(data);
     } else {
+        
+        displayException(data);
         throw new Error(data.error);
     }
       
@@ -93,7 +111,7 @@ function displayErrors(data){
     
     let results = "";
     let heading = `JSHint Results for ${data.file}`;
-    console.log(heading);
+    
     if(data.total_errors === 0 ){
         results = `<div class="no_errors">No errors reported!</div>`;
     } else {
@@ -104,7 +122,7 @@ function displayErrors(data){
             results += `<div class="error"> ${error.error}</div>`;
         }
     }
-    console.log(results);
+    
     document.getElementById("resultsModalTitle").innerText = heading;
     document.getElementById("results-content").innerHTML = results;
     resultsModal.show();
