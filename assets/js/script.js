@@ -23,7 +23,6 @@ async function getStatus(e){
     const data = await response.json();
 
     if (response.ok){
-        console.log(data.expiry);
         displayStatus(data);
     } else {
         //data.error is the descriptive error being returned from the json data
@@ -39,6 +38,7 @@ function displayStatus(data){
     resultsModal.show();
 
 }
+
 function processOptions(form){
 
     let optionList = [];
@@ -56,9 +56,7 @@ function processOptions(form){
     //entries in the optionList array separated by a comma
     //(not specifiying any delimiter on the join method will default to commas)
     form.append("options", optionList.join());
-    for(let entry of form.entries()){
-        console.log(entry);
-    };
+    
     return form;
 }
 
@@ -95,7 +93,7 @@ function displayErrors(data){
     
     let results = "";
     let heading = `JSHint Results for ${data.file}`;
-    
+    console.log(heading);
     if(data.total_errors === 0 ){
         results = `<div class="no_errors">No errors reported!</div>`;
     } else {
@@ -106,7 +104,7 @@ function displayErrors(data){
             results += `<div class="error"> ${error.error}</div>`;
         }
     }
-
+    console.log(results);
     document.getElementById("resultsModalTitle").innerText = heading;
     document.getElementById("results-content").innerHTML = results;
     resultsModal.show();
