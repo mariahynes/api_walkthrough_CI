@@ -1,4 +1,4 @@
-const API_KEY = "1KKBcDY9XFthklkrhi9VSTFuJx4";
+const API_KEY = "ZEmEeZVJif2i5X6VnxKM-lVqBWo";
 const API_URL = "https://ci-jshint.herokuapp.com/api";
 const resultsModal = new bootstrap.Modal(document.getElementById("resultsModal"));
 
@@ -13,7 +13,7 @@ async function getStatus(e){
     //needs to use the API_KEY in a GET API request to API_URL
     //needs pass results to a function to display the results
 
-    const queryString = `${API_URL}?api_key=${API_KEY})`;
+    const queryString = `${API_URL}?api_key=${API_KEY}`;
     
     // use await (can only use this keyword in an async function)
     //await the queryString promise:
@@ -35,7 +35,7 @@ async function getStatus(e){
 function displayStatus(data){
 
     document.getElementById("resultsModalTitle").innerText = "API Key Status";
-    document.getElementById("results-content").innerHTML = `Your key is valid until <br> ${data.expiry_date}`
+    document.getElementById("results-content").innerHTML = `Your key is valid until <br> ${data.expiry}`
     resultsModal.show();
 
 }
@@ -43,7 +43,7 @@ function processOptions(form){
 
     let optionList = [];
 
-    for(let entry in form.entries){
+    for(let entry of form.entries()){
         if (entry[0] === "options"){
             optionList.push(entry[1])
         }
@@ -56,7 +56,9 @@ function processOptions(form){
     //entries in the optionList array separated by a comma
     //(not specifiying any delimiter on the join method will default to commas)
     form.append("options", optionList.join());
-    
+    for(let entry of form.entries()){
+        console.log(entry);
+    };
     return form;
 }
 
@@ -64,14 +66,14 @@ async function postForm(e){
 
     //method to create an object from the form data/fields
     //this object is used in the 'body' parameter of the fetch
-    const form = new FormData(document.getElementById("checksform"));
+    //const form = new FormData(document.getElementById("checksform"));
 
     //needs to have additional processing to format options into comma separated list
     //so will create and use a function do to this:
     const form = processOptions(new FormData(document.getElementById("checksform")));
 
     //this is will make a POST request to the API, with authorisation, attaching the form object:
-    const response = fetch(API_URL, {
+    const response = await fetch(API_URL, {
         method: "POST",
         headers: {
                     "Authorization": API_KEY,
@@ -80,7 +82,7 @@ async function postForm(e){
     });
 
     const data = await response.json();
-
+    
     if(response.ok){
         displayErrors(data);
     } else {
@@ -90,15 +92,17 @@ async function postForm(e){
 }
 
 function displayErrors(data){
-
+    
+    let results = "";
     let heading = `JSHint Results for ${data.file}`;
+    
     if(data.total_errors === 0 ){
         results = `<div class="no_errors">No errors reported!</div>`;
     } else {
-        results = `<div>Total Errors: <span class="error_count">${data.total_errors}</span>`
+        results = `<div>Total Errors: <span class="error_count">${data.total_errors}</span></div>`;
         for (let error of data.error_list){
-            results += `<div>At line <span class="line">${error.line}</span>,`
-            results += `column <span class="column">${error.col}</span></div`;
+            results += `<div>At line <span class="line">${error.line}</span>,`;
+            results += `column <span class="column">${error.col}</span></div>`;
             results += `<div class="error"> ${error.error}</div>`;
         }
     }
